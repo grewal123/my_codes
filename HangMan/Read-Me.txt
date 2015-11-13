@@ -1,0 +1,20 @@
+Please Import this in an Eclipse as it is Eclipse Project.
+Additional jar Files. 
+-> apache http client
+-> json 
+
+I have added both of these JARs in Jars folder in Hangman.
+Please include these while compiling 
+
+Logic
+
+Here it uses Dynamic Statistics . 
+It takes into care Probability of each letter .
+It calculates frequency of each letter dynamically after each guess and finds the best possible 
+next guess.
+
+For Ex:
+if it makes an guess "s" then first we make visited[s] = true so that it is never guessed again.
+also if s is right guess then we add it to right guess string and we narrow down the data set based on right choices so far.
+we do same  for wrong choices.
+
