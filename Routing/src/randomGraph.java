@@ -6,7 +6,7 @@ public class randomGraph{
 	Vector<Vector<Integer>> graph;
 	Vector<edge> edges;
 	int weight[][];
-	int degree[] ;
+	int degree[];
 	public static int n = 5000;
 	public static int f = 6;
 	public static int p = 20;
@@ -77,7 +77,7 @@ public class randomGraph{
 		edge newEdge;
 		for(int i =0;i<n;i++)
 		{
-			for(int j =0;j<n;j++)
+			for(int j =i+1;j<n;j++)
 			{
 				if(i==j)
 					continue;
@@ -106,6 +106,25 @@ public class randomGraph{
 			}
 		}
 		
+	}
+	void connectAll()
+	{
+		int rand_weight; edge newEdge;
+		for(int i=0;i<n-1;i++)
+		{
+			if(weight[i][i+1]==-1)
+			{
+				rand_weight = r.nextInt(max_weight);
+				graph.get(i).addElement(i+1);
+				graph.get(i+1).addElement(i);
+				degree[i]++;
+				degree[i+1]++;
+				weight[i][i+1] = rand_weight;
+				weight[i+1][i]  = rand_weight;
+				newEdge = new edge(i,i+1,rand_weight);
+				edges.addElement(newEdge);
+			}
+		}
 	}
 	Vector<Vector<Integer>> getGraph()
 	{

@@ -21,6 +21,7 @@ public class Routing
 			//Generating Dense Graph
 			newGraph1 = new randomGraph();
 			newGraph1.graphWithFixedConnectivity();
+			newGraph1.connectAll();
 			Vector<Vector<Integer>> denseGraph= newGraph1.getGraph(); 
 			degree1 = newGraph1.getDegree();
 		    weight1 = newGraph1.getWeights();
@@ -29,6 +30,7 @@ public class Routing
 			//Generating Sparse Graph
 		    newGraph2 = new randomGraph();
 			newGraph2.graphWithfDegree();
+			newGraph2.connectAll();
 			Vector<Vector<Integer>> sparseGraph= newGraph2.getGraph(); 
 			degree2 = newGraph2.getDegree();
 			weight2 = newGraph2.getWeights();
