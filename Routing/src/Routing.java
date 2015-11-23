@@ -13,6 +13,7 @@ public class Routing
 		int s,t;
 		Random r = new Random();
 		long startTime,endTime;
+		long sparse_UsingHeap = 0,sparse_WithoutHeap = 0,sparse_Kruskal= 0,dense_UsingHeap = 0,dense_WithoutHeap = 0,dense_Kruskal = 0;
 		for(int i =0;i<5;i++)
 		{
 			System.out.println();
@@ -77,6 +78,10 @@ public class Routing
 					}
 					System.out.println();
 					System.out.println("The time elapsed is :" + (endTime-startTime)/1000000.0);
+					if(k==0)//for sparse
+						sparse_WithoutHeap+=(endTime-startTime)/1000000.0;
+					if(k==1)// for dense
+						dense_WithoutHeap+=(endTime-startTime)/1000000.0;
 					
 					//With Using heap
 					t1=t;s1=s;
@@ -98,6 +103,10 @@ public class Routing
 					}
 					System.out.println();
 					System.out.println("The time elapsed is :" + (endTime-startTime)/1000000.0);
+					if(k==0)
+						sparse_UsingHeap+=(endTime-startTime)/1000000.0;
+					if(k==1)
+						dense_UsingHeap+=(endTime-startTime)/1000000.0;
 					
 					//With Using Kruskal's Algorithm
 					t1=t;s1=s;
@@ -120,6 +129,10 @@ public class Routing
 					}
 					System.out.println();
 					System.out.println("The time elapsed is :" + (endTime-startTime)/1000000.0);
+					if(k==0)
+						sparse_Kruskal+=(endTime-startTime)/1000000.0;
+					if(k==1)
+						dense_Kruskal+=(endTime-startTime)/1000000.0;
 					
 					//To check if there is any mismatching between results in 3 Algorithms
 					if(maxBandwidthValue!=maxBandwidthValue2 || maxBandwidthValue!=maxBandwidthValueFromKruskal || maxBandwidthValue2!=maxBandwidthValueFromKruskal)
@@ -138,6 +151,14 @@ public class Routing
 		    }
 		    
 		}
+		System.out.println("Average time for sparse graph without heap is " + sparse_WithoutHeap/25.0);
+		System.out.println("Average time for sparse graph with heap is " + sparse_UsingHeap/25.0);
+		System.out.println("Average time for sparse graph Using Kruskal is " + sparse_Kruskal/25.0);
+		System.out.println("Average time for dense graph without heap is " + dense_WithoutHeap/25.0);
+		System.out.println("Average time for dense graph with heap is " + dense_UsingHeap/25.0);
+		System.out.println("Average time for dense graph Using Kruskal is " + dense_Kruskal/25.0);
+
+
 	}
 }
 
