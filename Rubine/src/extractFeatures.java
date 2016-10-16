@@ -1,0 +1,325 @@
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+public class extractFeatures{
+	ArrayList<point> points;
+	double f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13;
+	point max,min;
+	
+	extractFeatures(ArrayList<point> points){
+		this.points = points;
+	}
+	
+	void removeDuplicates(){
+		for(int i=0;i<points.size()-1;i++){
+			
+			point a = points.get(i);
+			point b = points.get(i+1);
+			while(a.x==b.x && a.y==b.y){
+				points.remove(i+1);
+				if(i+1<points.size())
+				b = points.get(i+1);
+				else 
+				break;
+			}
+			
+		}
+		
+	}
+
+	void execute() {
+		// TODO Auto-generated method stub
+		calcBB();
+		//f1
+		f1 = calcCosine(points.get(0),points.get(2));
+		
+		//f2
+		f2 = calcSine(points.get(0),points.get(2));
+		
+		//f3
+		f3 = dist(max,min);
+		
+		//f4
+		f4 = calcAngle(min,max);
+		
+		//f5
+		f5 = dist(points.get(0),points.get(points.size()-1));
+		
+		//f6
+		f6 = calcCosine(points.get(0),points.get(points.size()-1));
+		
+		//f7
+		f7 = calcSine(points.get(0),points.get(points.size()-1));
+		
+		//f8
+		f8 = calcGestureLength();
+		
+		//f9
+		f9 = calcTotalAngle();
+				
+		//f10
+		f10 = calcTotalAbsAngle();
+		
+		//f11
+		f11 = calcSharpness();
+		
+		//f12
+		f12 = calcMaxSpeed();
+		
+		//f13
+		f13 = points.get(points.size()-1).time - points.get(0).time;
+
+	}
+	
+	void calcBB(){
+		
+		int xmax=0,ymax=0,xmin=Integer.MAX_VALUE,ymin =Integer.MAX_VALUE;
+		point p;
+		for(int i=0;i<points.size();i++){
+			
+			p = points.get(i);
+			if(p.x<xmin)
+				xmin = p.x;
+			
+			if(p.y<ymin)
+				ymin = p.y;
+			
+			if(p.x>xmax)
+				xmax = p.x;
+			
+			if(p.y>ymax)
+				ymax = p.y;
+			
+			
+		}
+		
+		max = new point(xmax,ymax,0);
+		min = new point(xmin,ymin,0);
+		
+	}
+	
+	
+	double dist(point a,point b){
+		
+		double res ;
+		
+		res = Math.sqrt((Math.pow((a.x-b.x),2) + Math.pow((a.y-b.y),2)));
+		
+		return res;
+		
+		
+	}
+	
+	double calcAngle(point a,point b){
+		
+		double angle = 0;
+		
+		angle = Math.atan((double)(b.y-a.y)/(b.x - a.x)) ;	
+		
+		return angle;
+		
+	}
+double calcCosine(point a,point b){
+		
+		double res;
+		
+		res = (double)(b.x-a.x)/Math.sqrt(Math.pow((b.x - a.x),2) + Math.pow((b.y - a.y),2));
+		
+		return res;
+		
+	}
+	
+	double calcSine(point a,point b){
+		
+		double res;
+		
+		res = (double)(b.y-a.y)/Math.sqrt(Math.pow((b.x - a.x),2) + Math.pow((b.y - a.y),2));
+		
+		return res;
+		
+	}
+	
+	double calcGestureLength(){
+		
+		double length = 0;
+		
+		for(int i=0;i<points.size()-1;i++)
+		length += dist(points.get(i),points.get(i+1));
+		
+		
+		return length;
+		
+	}
+	
+	double calcMaxSpeed(){
+		
+		double res =0;
+		double maxSpeed =0;
+		double speed=0;
+		
+		for(int i=0;i<points.size()-1;i++){
+			
+			point a = points.get(i);
+			point b = points.get(i+1);
+			while(a.time==b.time){
+				points.remove(i+1);
+				if(i+1<points.size())
+				b = points.get(i+1);
+				else 
+				break;
+			}
+			
+		}
+		
+		for(int i=0;i<points.size()-1;i++)
+		{
+			if(points.get(i+1).time != points.get(i).time)
+			{
+				speed = (double)(dist(points.get(i),points.get(i+1)))/(points.get(i+1).time - points.get(i).time);
+				if(maxSpeed<speed)
+					maxSpeed = speed;
+			}
+		}
+		
+		res = Math.pow(maxSpeed, 2);
+		
+		return res;
+		
+		
+		
+	}
+	
+	double calcAdjAngle(int p){
+		
+		double res = 0;
+
+		double tan = 0;
+		//if((calcDeltaX(p)*calcDeltaX(p-1)+calcDeltaY(p)*calcDeltaY(p-1))!=0)
+		tan =	(double)(calcDeltaX(p)*calcDeltaY(p-1) - calcDeltaX(p-1)*calcDeltaY(p))/(calcDeltaX(p)*calcDeltaX(p-1)+calcDeltaY(p)*calcDeltaY(p-1));
+
+		
+		res = Math.atan(tan);
+		
+		return res;
+		
+	}
+double calcDeltaX(int p){
+		
+		double res = 0;
+		
+		point a ,b;
+		a = points.get(p+1);
+		b = points.get(p);
+		
+		
+		res = a.x - b.x ; 
+		
+		return res;
+		
+	}
+
+double calcDeltaY(int p){
+	
+	double res = 0;
+	
+	point a ,b;
+	a = points.get(p+1);
+	b = points.get(p);
+	
+	res = a.y - b.y ; 
+	
+	return res;
+	
+}
+	
+	double calcTotalAngle(){
+		
+		double res = 0;
+		
+		for(int i=1; i<points.size()-1;i++)
+		res += calcAdjAngle(i);
+		
+		return res;
+		
+		
+	}
+	
+double calcTotalAbsAngle(){
+		
+		double res = 0;
+		
+		for(int i=1; i<points.size()-1;i++)
+		res += Math.abs(calcAdjAngle(i));
+		
+		return res;
+		
+		
+	}
+
+double calcSharpness(){
+	
+	double res = 0;
+	
+	for(int i=1; i<points.size()-1;i++)
+	res += Math.pow(calcAdjAngle(i),2);
+	
+	return res;
+	
+	
+}
+void writeToCSV(String fileName){
+	
+	try {
+		FileWriter fw = new FileWriter("letters.csv", true);
+	    BufferedWriter bw = new BufferedWriter(fw);
+	    PrintWriter pw = new PrintWriter(bw);
+		StringBuilder sb = new StringBuilder();
+	    
+	     sb.append("\n");
+	     sb.append(f1);
+	     sb.append(",");
+	     sb.append(f2);
+	     sb.append(",");
+	     sb.append(f3);
+	     sb.append(",");
+	     sb.append(f4);
+	     sb.append(",");
+	     sb.append(f5);
+	     sb.append(",");
+	     sb.append(f6);
+	     sb.append(",");
+	     sb.append(f7);
+	     sb.append(",");
+	     sb.append(f8);
+	     sb.append(",");
+	     sb.append(f9);
+	     sb.append(",");
+	     sb.append(f10);
+	     sb.append(",");
+	     sb.append(f11);
+	     sb.append(",");
+	     sb.append(f12);
+	     sb.append(",");
+	     sb.append(f13);
+	     sb.append(",");
+	     sb.append(fileName);
+
+	     pw.write(sb.toString());
+	     pw.close();
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+     
+	
+	
+}
+	
+	
+}
